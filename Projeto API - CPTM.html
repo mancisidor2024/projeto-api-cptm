@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth scroll-pt-20">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto API • Gestão Logística & BI — CPTM</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            950: '#090E1A',
+                            900: '#0F172A', // Azul marinho profundo
+                            800: '#1E3A8A', // Azul corporativo institucional
+                            700: '#1D4ED8',
+                        },
+                        cptm: {
+                            red: '#EE3124',     // Vermelho CPTM estratégico
+                            redDark: '#C81E13',
+                            redLight: '#FEF2F2',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Barra de rolagem personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94A3B8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+
+        /* Padrão sutil de malha ferroviária no Hero */
+        .rail-grid-bg {
+            background-image: 
+                radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(to right, rgba(30, 58, 138, 0.25), rgba(15, 23, 42, 0.95));
+            background-size: 28px 28px, 100% 100%;
+        }
+
+        /* Animação suave para acordeão */
+        .accordion-content {
+            transition: max-height 0.35s ease-out, opacity 0.25s ease-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .accordion-content.open {
+            max-height: 1600px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 font-sans antialiased selection:bg-[#EE3124] selection:text-white">
+
+    <!-- =====================================================================
+         STICKY NAVBAR (BARRA DE NAVEGAÇÃO FIXA)
+    ====================================================================== -->
+    <nav id="navbar" class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-300">
+        <!-- Linha de destaque institucional superior -->
+        <div class="h-1 w-full bg-gradient-to-r from-[#0F172A] via-[#1E3A8A] to-[#EE3124]"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-18 py-3.5">
+                <!-- Identidade / Logo -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-[#0F172A] flex items-center justify-center text-white shadow-sm group-hover:bg-[#1E3A8A] transition-colors relative overflow-hidden">
+                        <i class="fa-solid fa-train-subway text-lg"></i>
+                        <span class="absolute bottom-0 inset-x-0 h-1 bg-[#EE3124]"></span>
+                    </div>
+                    <div>
+                        <span class="font-display font-extrabold text-lg sm:text-xl text-[#0F172A] tracking-tight block leading-none">
+                            API <span class="text-[#EE3124]">CPTM</span>
+                        </span>
+                        <span class="text-[11px] font-medium text-slate-500 tracking-wide uppercase">
+                            Logística &amp; Business Intelligence
+                        </span>
+                    </div>
+                </a>
+
+                <!-- Links Desktop -->
+                <div class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <a href="#visao-geral" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-[#1E3A8A] hover:bg-slate-100/80 transition-colors">Visão Geral</a>
+                    <a href="#objetivos" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-[#1E3A8A] hover:bg-slate-100/80 transition-colors">Objetivos</a>
+                    <a href="#tecnologias" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-[#1E3A8A] hover:bg-slate-100/80 transition-colors">Tecnologias</a>
+                    <a href="#planejamento" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-[#1E3A8A] hover:bg-slate-100/80 transition-colors">Backlog &amp; Sprints</a>
+                    <a href="#equipe" class="ml-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#1E3A8A] hover:bg-[#0F172A] shadow-sm transition-all">
+                        Estrutura Ágil
+                    </a>
+                </div>
+
+                <!-- Botão Menu Mobile -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" type="button" aria-label="Abrir menu de navegação" class="p-2.5 rounded-xl text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A]">
+                        <i id="mobile-menu-icon" class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 shadow-xl">
+            <div class="px-4 pt-3 pb-5 space-y-1.5">
+                <a href="#visao-geral" class="mobile-nav-link block px-4 py-3 rounded-xl text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-[#1E3A8A]">Visão Geral &amp; Importância</a>
+                <a href="#objetivos" class="mobile-nav-link block px-4 py-3 rounded-xl text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-[#1E3A8A]">Objetivos (4 Pilares)</a>
+                <a href="#tecnologias" class="mobile-nav-link block px-4 py-3 rounded-xl text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-[#1E3A8A]">Stack Tecnológico</a>
+                <a href="#planejamento" class="mobile-nav-link block px-4 py-3 rounded-xl text-base font-medium text-slate-700 hover:bg-slate-50 hover:text-[#1E3A8A]">Backlog &amp; Sprints</a>
+                <a href="#equipe" class="mobile-nav-link block px-4 py-3 rounded-xl text-base font-semibold text-white bg-[#1E3A8A] text-center mt-2">Equipe — Estrutura Ágil</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- =====================================================================
+         1. HERO SECTION (CAPA DO PROJETO)
+    ====================================================================== -->
+    <header class="relative bg-[#0F172A] rail-grid-bg text-white overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-28">
+        <!-- Elementos decorativos de brilho -->
+        <div class="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#1E3A8A]/40 blur-3xl"></div>
+        <div class="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#EE3124]/20 blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto text-center">
+                <!-- Badge Institucional -->
+                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/15 backdrop-blur-sm text-xs sm:text-sm font-semibold tracking-wide text-slate-100 mb-7 shadow-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#EE3124] animate-pulse"></span>
+                    Projeto API • Gestão Logística &amp; Business Intelligence • CPTM
+                </div>
+
+                <!-- Título Principal -->
+                <h1 class="font-display text-3xl sm:text-5xl lg:text-[54px] font-extrabold tracking-tight leading-[1.14] text-white mb-6">
+                    Controle, Análise e Giro de Estoque de Materiais de Manutenção — 
+                    <span class="text-[#EE3124]">CPTM</span>
+                </h1>
+
+                <!-- Subtítulo -->
+                <p class="text-base sm:text-xl text-slate-300 font-normal leading-relaxed max-w-3xl mx-auto mb-10">
+                    Integração estratégica das bases de dados do <strong class="text-white font-semibold">ERP ALVO</strong> em dashboards interativos no <strong class="text-white font-semibold">Power BI</strong>, prevenindo rupturas críticas na manutenção das frotas de trens e reduzindo o capital imobilizado nos almoxarifados.
+                </p>
+
+                <!-- Botões de Âncora Rápida -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 mb-16">
+                    <a href="#objetivos" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-white bg-[#EE3124] hover:bg-[#C81E13] shadow-lg shadow-[#EE3124]/25 transition-all duration-200">
+                        <i class="fa-solid fa-bullseye"></i>
+                        Explorar Objetivos
+                    </a>
+                    <a href="#planejamento" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-white bg-[#1E3A8A] hover:bg-blue-800 border border-blue-400/20 shadow-lg transition-all duration-200">
+                        <i class="fa-solid fa-list-check"></i>
+                        Backlog &amp; Sprints
+                    </a>
+                    <a href="#equipe" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-slate-200 bg-white/10 hover:bg-white/15 border border-white/15 transition-all duration-200">
+                        <i class="fa-solid fa-users-gear"></i>
+                        Estrutura Ágil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Cards de Destaque Rápido (KPIs do Escopo) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                <!-- KPI 1 -->
+                <div class="bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:bg-white/[0.09] transition-colors">
+                    <div class="flex items-center gap-3.5 mb-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-database text-lg"></i>
+                        </div>
+                        <h2 class="font-display font-bold text-base text-white">Integração ERP ALVO</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Consolidação automatizada de cadastros, saldos físicos e movimentações históricas.
+                    </p>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:bg-white/[0.09] transition-colors">
+                    <div class="flex items-center gap-3.5 mb-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-arrows-spin text-lg"></i>
+                        </div>
+                        <h2 class="font-display font-bold text-base text-white">Curva ABC &amp; Giro</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Classificação automática por consumo e custos para negociação e controle de giro.
+                    </p>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:bg-white/[0.09] transition-colors">
+                    <div class="flex items-center gap-3.5 mb-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-[#EE3124]/25 text-red-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                        </div>
+                        <h2 class="font-display font-bold text-base text-white">Alertas &gt; 180 Dias</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Sinalização visual imediata para materiais obsoletos, excessos e risco de ruptura.
+                    </p>
+                </div>
+
+                <!-- KPI 4 -->
+                <div class="bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:bg-white/[0.09] transition-colors">
+                    <div class="flex items-center gap-3.5 mb-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-mobile-screen-button text-lg"></i>
+                        </div>
+                        <h2 class="font-display font-bold text-base text-white">Acesso Mobile (≤ 2 cliques)</h2>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        Layout responsivo otimizado para consulta ágil em vistorias de campo e oficinas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- =====================================================================
+             2. VISÃO GERAL & IMPORTÂNCIA ESTRATÉGICA
+        ====================================================================== -->
+        <section id="visao-geral" class="py-20 lg:py-24 bg-white border-b border-slate-200/70">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Cabeçalho da Seção -->
+                <div class="max-w-3xl mb-14">
+                    <span class="inline-block text-xs font-bold uppercase tracking-widest text-[#EE3124] mb-2">
+                        Contextualização &amp; Relevância Operacional
+                    </span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-4">
+                        Visão Geral &amp; Importância Estratégica
+                    </h2>
+                    <div class="h-1.5 w-20 bg-[#1E3A8A] rounded-full"></div>
+                </div>
+
+                <!-- Descrição Detalhada + Painel Ilustrativo de Fluxo -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-16">
+                    <div class="lg:col-span-7 space-y-5 text-slate-600 text-base sm:text-lg leading-relaxed">
+                        <p>
+                            Este projeto tem como objetivo o desenvolvimento de uma solução em <strong class="text-[#0F172A] font-semibold">Business Intelligence (BI)</strong> voltada para o controle, análise e acompanhamento da evolução e giro de estoque de materiais de manutenção na <strong class="text-[#1E3A8A] font-semibold">CPTM (Companhia Paulista de Trens Metropolitanos)</strong>.
+                        </p>
+                        <p>
+                            A proposta contempla a criação de dashboards interativos em <strong class="text-[#0F172A] font-semibold">Power BI</strong> que organizam, higienizam e integram as diferentes bases de dados extraídas do <strong class="text-[#0F172A] font-semibold">ERP ALVO</strong> — incluindo relatórios de cadastro de materiais, saldos físicos atuais, centros de custo e movimentações históricas.
+                        </p>
+                        <p>
+                            Por meio dessa arquitetura analítica, gestores, supervisores de almoxarifado e analistas de compras passam a monitorar indicadores essenciais de rotatividade, impacto financeiro e riscos operacionais, atuando preventivamente contra a <span class="text-[#EE3124] font-semibold">falta de peças críticas para a manutenção dos trens</span> e promovendo a redução de capital parado.
+                        </p>
+                    </div>
+
+                    <!-- Card Arquitetura de Dados (ERP ALVO -> Python -> Power BI) -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-[#F8FAFC] border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                            <div class="flex items-center justify-between mb-6">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Arquitetura da Solução BI</span>
+                                <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-100 text-[#1E3A8A]">Fluxo de Dados</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <!-- Etapa 1 -->
+                                <div class="bg-white p-4 rounded-xl border border-slate-200/90 flex items-start gap-4 shadow-2xs">
+                                    <div class="w-10 h-10 rounded-lg bg-[#0F172A] text-white flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-server"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-display font-bold text-sm text-[#0F172A]">1. Extração ERP ALVO</h3>
+                                        <p class="text-xs text-slate-500 mt-1">Cadastros de materiais, saldos físicos, centros de custo e histórico de entradas/saídas.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-center text-slate-400">
+                                    <i class="fa-solid fa-arrow-down"></i>
+                                </div>
+
+                                <!-- Etapa 2 -->
+                                <div class="bg-white p-4 rounded-xl border border-slate-200/90 flex items-start gap-4 shadow-2xs">
+                                    <div class="w-10 h-10 rounded-lg bg-[#1E3A8A] text-white flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="fa-brands fa-python"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-display font-bold text-sm text-[#0F172A]">2. Tratamento ETL (Python / Colab)</h3>
+                                        <p class="text-xs text-slate-500 mt-1">Limpeza de duplicidades, padronização de chaves e estruturação relacional livre de erros.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-center text-slate-400">
+                                    <i class="fa-solid fa-arrow-down"></i>
+                                </div>
+
+                                <!-- Etapa 3 -->
+                                <div class="bg-white p-4 rounded-xl border-l-4 border-l-[#EE3124] border border-slate-200/90 flex items-start gap-4 shadow-2xs">
+                                    <div class="w-10 h-10 rounded-lg bg-[#EE3124] text-white flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-chart-pie"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-display font-bold text-sm text-[#0F172A]">3. Inteligência Visual (Power BI &amp; Mobile)</h3>
+                                        <p class="text-xs text-slate-500 mt-1">Indicadores de giro, Curva ABC, previsão de cobertura (3 meses) e alertas visuais.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 Cards de Importância Estratégica -->
+                <div>
+                    <h3 class="font-display text-xl font-bold text-[#0F172A] mb-6 flex items-center gap-2.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#EE3124]"></span>
+                        Por que este projeto é estratégico para a CPTM?
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Importância 1 -->
+                        <div class="bg-[#F8FAFC] rounded-2xl p-7 border border-slate-200/90 hover:border-[#1E3A8A]/40 hover:shadow-md transition-all">
+                            <div class="w-12 h-12 rounded-xl bg-[#EE3124]/10 text-[#EE3124] flex items-center justify-center mb-5">
+                                <i class="fa-solid fa-shield-halved text-xl"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-lg text-[#0F172A] mb-2.5">
+                                1. Prevenção de Falta de Peças
+                            </h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Garante a continuidade operacional na manutenção preventiva e corretiva das frotas de trens, antecipando riscos de ruptura e assegurando cobertura para os próximos 3 meses.
+                            </p>
+                        </div>
+
+                        <!-- Importância 2 -->
+                        <div class="bg-[#F8FAFC] rounded-2xl p-7 border border-slate-200/90 hover:border-[#1E3A8A]/40 hover:shadow-md transition-all">
+                            <div class="w-12 h-12 rounded-xl bg-[#1E3A8A]/10 text-[#1E3A8A] flex items-center justify-center mb-5">
+                                <i class="fa-solid fa-sack-dollar text-xl"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-lg text-[#0F172A] mb-2.5">
+                                2. Redução de Capital Parado
+                            </h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Identifica automaticamente materiais obsoletos ou sem movimentação há mais de 180 dias, além de sinalizar excessos de estoque que imobilizam recursos financeiros e espaço físico.
+                            </p>
+                        </div>
+
+                        <!-- Importância 3 -->
+                        <div class="bg-[#F8FAFC] rounded-2xl p-7 border border-slate-200/90 hover:border-[#1E3A8A]/40 hover:shadow-md transition-all">
+                            <div class="w-12 h-12 rounded-xl bg-slate-900/10 text-[#0F172A] flex items-center justify-center mb-5">
+                                <i class="fa-solid fa-gauge-high text-xl"></i>
+                            </div>
+                            <h4 class="font-display font-bold text-lg text-[#0F172A] mb-2.5">
+                                3. Governança e Agilidade na Decisão
+                            </h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                Substitui planilhas fragmentadas por indicadores confiáveis em tempo real, oferecendo navegação rápida em versão mobile para apoiar supervisores e gestores diretamente nas oficinas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             3. OBJETIVOS DO PROJETO (4 PILARES)
+        ====================================================================== -->
+        <section id="objetivos" class="py-20 lg:py-24 bg-[#F8FAFC]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-xs font-bold uppercase tracking-widest text-[#EE3124] mb-2">
+                        Diretrizes &amp; Entregáveis Principais
+                    </span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-4">
+                        Objetivos do Projeto (4 Pilares)
+                    </h2>
+                    <p class="text-base sm:text-lg text-slate-600">
+                        Estruturação ponta a ponta da inteligência logística de materiais de manutenção ferroviária.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                    <!-- Pilar 1 -->
+                    <div class="bg-white rounded-2xl p-7 sm:p-8 border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-[#1E3A8A]"></div>
+                        <div class="flex items-start gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-[#1E3A8A] flex items-center justify-center shrink-0 text-2xl font-bold">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-[#1E3A8A]">Pilar 01</span>
+                                <h3 class="font-display font-bold text-xl text-[#0F172A] mt-1 mb-3">
+                                    Integração e Organização de Dados
+                                </h3>
+                                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                                    Integrar e organizar as diferentes bases de dados brutas obtidas do <strong>ERP ALVO</strong>, consolidando cadastros de materiais, movimentações históricas, saldos físicos e centros de custo em um modelo confiável.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pilar 2 -->
+                    <div class="bg-white rounded-2xl p-7 sm:p-8 border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-[#0F172A]"></div>
+                        <div class="flex items-start gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-slate-100 text-[#0F172A] flex items-center justify-center shrink-0 text-2xl font-bold">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Pilar 02</span>
+                                <h3 class="font-display font-bold text-xl text-[#0F172A] mt-1 mb-3">
+                                    Análise de Indicadores de Estoque
+                                </h3>
+                                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                                    Analisar continuamente a velocidade de rotatividade (<strong>giro de estoque</strong>), o tempo médio de permanência, o estoque médio e o valor total do capital imobilizado da CPTM.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pilar 3 -->
+                    <div class="bg-white rounded-2xl p-7 sm:p-8 border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-[#EE3124]"></div>
+                        <div class="flex items-start gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-red-50 text-[#EE3124] flex items-center justify-center shrink-0 text-2xl font-bold">
+                                <i class="fa-solid fa-tablet-screen-button"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-[#EE3124]">Pilar 03</span>
+                                <h3 class="font-display font-bold text-xl text-[#0F172A] mt-1 mb-3">
+                                    Dashboard Interativo e Mobile
+                                </h3>
+                                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                                    Desenvolver dashboard interativo no <strong>Power BI</strong> com visões gerenciais e operacionais, incluindo versão otimizada para celulares e tablets com navegação rápida em <strong>até 2 cliques</strong>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pilar 4 -->
+                    <div class="bg-white rounded-2xl p-7 sm:p-8 border border-slate-200/90 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+                        <div class="flex items-start gap-5">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 text-2xl font-bold">
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Pilar 04</span>
+                                <h3 class="font-display font-bold text-xl text-[#0F172A] mt-1 mb-3">
+                                    Classificação ABC e Alertas de Risco
+                                </h3>
+                                <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                                    Implementar sistema automático de classificação de importância (<strong>Curva ABC</strong>) e alertas visuais de risco para materiais parados há muito tempo (&gt;180 dias), em excesso ou com risco de ruptura.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             4. STACK TECNOLÓGICO (10 FERRAMENTAS)
+        ====================================================================== -->
+        <section id="tecnologias" class="py-20 lg:py-24 bg-white border-t border-b border-slate-200/70">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-xs font-bold uppercase tracking-widest text-[#EE3124] mb-2">
+                        Ecossistema de Desenvolvimento &amp; Gestão
+                    </span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-4">
+                        Stack Tecnológico
+                    </h2>
+                    <p class="text-base sm:text-lg text-slate-600">
+                        As 10 ferramentas integradas para engenharia de dados, visualização analítica, documentação e colaboração ágil.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <!-- 1. Power BI -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-chart-column text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">Power BI</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Dashboards gerenciais, operacionais e mobile</p>
+                    </div>
+
+                    <!-- 2. Python (Google Colab) -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-blue-100 text-[#1E3A8A] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-brands fa-python text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">Python (Google Colab)</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Limpeza, tratamento e estruturação das bases brutas do ERP ALVO</p>
+                    </div>
+
+                    <!-- 3. Google Drive -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-brands fa-google-drive text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">Google Drive</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Repositório centralizado de bases e documentos</p>
+                    </div>
+
+                    <!-- 4. Pacote Office -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-file-excel text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">Pacote Office</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Apoio documental, planilhas auxiliares e relatórios</p>
+                    </div>
+
+                    <!-- 5. Canva -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-palette text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">Canva</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Prototipação visual do layout e identidade das apresentações</p>
+                    </div>
+
+                    <!-- 6. ScreenToGif -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-rose-100 text-[#EE3124] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-film text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">ScreenToGif</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Captura de demonstrações interativas do painel</p>
+                    </div>
+
+                    <!-- 7. NotebookLM -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-book-open-reader text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">NotebookLM</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Síntese documental, apoio à pesquisa e dicionário de dados</p>
+                    </div>
+
+                    <!-- 8. Base44 -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-slate-200 text-[#0F172A] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-cubes text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">Base44</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Apoio ao desenvolvimento e prototipação web</p>
+                    </div>
+
+                    <!-- 9. WhatsApp -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-green-100 text-green-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-brands fa-whatsapp text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">WhatsApp</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Comunicação ágil diária da equipe</p>
+                    </div>
+
+                    <!-- 10. Discord -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-5 border border-slate-200/90 hover:border-[#1E3A8A] hover:bg-white hover:shadow-md transition-all group">
+                        <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                            <i class="fa-brands fa-discord text-xl"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] mb-1.5">Discord</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">Reuniões de alinhamento, dailies e compartilhamento de tela</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             5. PLANEJAMENTO ÁGIL: PRODUCT BACKLOG & REGISTRO DAS SPRINTS
+        ====================================================================== -->
+        <section id="planejamento" class="py-20 lg:py-24 bg-[#F8FAFC]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-xs font-bold uppercase tracking-widest text-[#EE3124] mb-2">
+                        Gestão Ágil Scrum • Entregas Incrementais
+                    </span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-4">
+                        Planejamento Ágil: Product Backlog &amp; Sprints
+                    </h2>
+                    <p class="text-base sm:text-lg text-slate-600">
+                        Histórias de usuário priorizadas conforme o valor entregue à operação da CPTM e cronograma de marcos do semestre.
+                    </p>
+                </div>
+
+                <!-- SUBSEÇÃO A: PRODUCT BACKLOG (12 USER STORIES) -->
+                <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 lg:p-10 mb-14">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-6 border-b border-slate-100">
+                        <div>
+                            <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#1E3A8A] mb-1">
+                                <i class="fa-solid fa-clipboard-list"></i> Subseção A
+                            </div>
+                            <h3 class="font-display text-2xl font-bold text-[#0F172A]">
+                                Product Backlog (12 User Stories)
+                            </h3>
+                            <p id="backlog-counter" class="text-sm text-slate-500 mt-1">
+                                Exibindo 12 de 12 histórias de usuário
+                            </p>
+                        </div>
+
+                        <!-- Controles de Filtro Interativo -->
+                        <div class="flex flex-col sm:flex-row gap-3 sm:items-center">
+                            <!-- Filtro por Sprint -->
+                            <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl">
+                                <span class="text-xs font-semibold text-slate-500 px-2">Sprint:</span>
+                                <button type="button" data-filter-sprint="all" class="sprint-filter-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#0F172A] text-white shadow-2xs transition-all">Todas</button>
+                                <button type="button" data-filter-sprint="1" class="sprint-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#0F172A] transition-all">Sprint 1</button>
+                                <button type="button" data-filter-sprint="2" class="sprint-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#0F172A] transition-all">Sprint 2</button>
+                                <button type="button" data-filter-sprint="3" class="sprint-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#0F172A] transition-all">Sprint 3</button>
+                            </div>
+
+                            <!-- Filtro por Prioridade -->
+                            <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl">
+                                <span class="text-xs font-semibold text-slate-500 px-2">Prioridade:</span>
+                                <button type="button" data-filter-prio="all" class="prio-filter-btn active px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1E3A8A] text-white shadow-2xs transition-all">Todas</button>
+                                <button type="button" data-filter-prio="Alta" class="prio-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#0F172A] transition-all">Alta</button>
+                                <button type="button" data-filter-prio="Média" class="prio-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-[#0F172A] transition-all">Média</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabela Interativa Responsiva -->
+                    <div class="overflow-x-auto mt-6 rounded-2xl border border-slate-200">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#0F172A] text-white text-xs uppercase tracking-wider">
+                                    <th class="py-3.5 px-4 font-semibold text-center w-16">Rank</th>
+                                    <th class="py-3.5 px-4 font-semibold w-28">Prioridade</th>
+                                    <th class="py-3.5 px-4 font-semibold">User Story (História de Usuário)</th>
+                                    <th class="py-3.5 px-4 font-semibold text-center w-28">Estimativa</th>
+                                    <th class="py-3.5 px-4 font-semibold text-center w-28">Sprint</th>
+                                </tr>
+                            </thead>
+                            <tbody id="backlog-tbody" class="divide-y divide-slate-200 text-sm">
+                                <!-- Rank 1 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="1" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">1</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Gerente de Logística da CPTM, quero que os dados brutos do ERP sejam limpos e estruturados, para garantir relatórios livres de duplicidades e erros.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">13</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-[#1E3A8A] border border-blue-200">Sprint 1</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 2 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="1" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">2</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Gerente de Logística da CPTM, quero visualizar um protótipo do layout, para aprovar a distribuição visual das informações antes do desenvolvimento do dashboard.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">3</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-[#1E3A8A] border border-blue-200">Sprint 1</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 3 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="1" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">3</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Supervisor do Almoxarifado, quero filtrar as informações por Almoxarifado, Período e Tipo de Material, para focar a análise exclusivamente nos dados do meu galpão.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">3</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-[#1E3A8A] border border-blue-200">Sprint 1</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 4 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="2" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">4</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Gerente de Logística da CPTM, quero que o layout aprovado seja implementado no Power BI com indicadores de Quantidade Total, Valor Imobilizado e Estoque Médio, para validar a operação do painel com dados reais.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">5</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Sprint 2</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 5 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="2" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">5</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Gerente de Logística da CPTM, quero gráficos do histórico mensal de compras e consumo, para monitorar a evolução do capital investido ao longo do tempo.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">5</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Sprint 2</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 6 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="2" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">6</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Analista de Compras, quero visualizar o ranking de custos e a classificação automática da Curva ABC por consumo, para direcionar as negociações de novos contratos aos materiais mais críticos.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">8</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Sprint 2</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 7 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="2" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">7</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Gerente de Logística da CPTM, quero que o dashboard tenha uma versão em um site, para ampliar minhas possibilidades de soluções.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">13</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Sprint 2</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 8 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="2" data-prio="Média">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">8</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Média
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Supervisor do Almoxarifado, quero acompanhar o giro de estoque e o tempo médio de permanência dos materiais, para otimizar o uso do espaço físico do galpão.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">8</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Sprint 2</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 9 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="3" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">9</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Supervisor do Almoxarifado, quero receber alertas visuais sobre estoque parado há mais de 180 dias, risco de ruptura ou excesso, para agilizar a tomada de decisão nas oficinas.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">100</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-300">Sprint 3</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 10 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="3" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">10</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Gerente de Logística da CPTM, quero acessar uma versão otimizada para dispositivos móveis com navegação rápida (até 2 cliques), para monitorar os indicadores de forma ágil durante as vistorias.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">100</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-300">Sprint 3</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 11 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="3" data-prio="Alta">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">11</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-[#EE3124] border border-red-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#EE3124]"></span> Alta
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Analista de Compras, quero visualizar a cobertura de estoque e a previsão de consumo para os próximos 3 meses, para planejar compras futuras com segurança e evitar surpresas.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">100</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-300">Sprint 3</span>
+                                    </td>
+                                </tr>
+                                <!-- Rank 12 -->
+                                <tr class="backlog-row hover:bg-slate-50/90 transition-colors" data-sprint="3" data-prio="Média">
+                                    <td class="py-4 px-4 text-center font-display font-bold text-[#0F172A]">12</td>
+                                    <td class="py-4 px-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Média
+                                        </span>
+                                    </td>
+                                    <td class="py-4 px-4 text-slate-700 leading-relaxed">Como Gerente de Logística da CPTM, quero receber um manual do usuário e um dicionário explicativo dos dados, para garantir que a equipe saiba operar e manter o dashboard com autonomia.</td>
+                                    <td class="py-4 px-4 text-center font-semibold text-slate-700">100</td>
+                                    <td class="py-4 px-4 text-center">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-300">Sprint 3</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Acordeão Opcional: Imagem Original do Backlog -->
+                    <div class="mt-6 pt-5 border-t border-slate-100">
+                        <button type="button" onclick="toggleAccordion('acc-backlog', this)" class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-[#1E3A8A] bg-blue-50/80 hover:bg-blue-100 transition-colors">
+                            <i class="fa-regular fa-image"></i>
+                            <span>Visualizar Registro Original do Backlog (image_6b8a7e.png)</span>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 acc-icon"></i>
+                        </button>
+                        <div id="acc-backlog" class="accordion-content mt-4">
+                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 max-w-4xl mx-auto">
+                                <img src="image_6b8a7e.png" alt="Tabela Original do Product Backlog" class="w-full h-auto rounded-xl shadow-xs mx-auto" onerror="this.src='https://placehold.co/900x1100/F1F5F9/1E3A8A?text=Registro+Original+do+Backlog+(image_6b8a7e.png)'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBSEÇÃO B: CRONOGRAMA E ENTREGAS (REGISTRO DAS SPRINTS) -->
+                <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 lg:p-10">
+                    <div class="mb-8">
+                        <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#1E3A8A] mb-1">
+                            <i class="fa-solid fa-calendar-check"></i> Subseção B
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-[#0F172A]">
+                            Cronograma e Entregas (Registro das Sprints)
+                        </h3>
+                        <p class="text-sm text-slate-500 mt-1">
+                            Acompanhamento dos ciclos de desenvolvimento até a apresentação final na Feira de Soluções.
+                        </p>
+                    </div>
+
+                    <!-- Linha do Tempo Visual (5 Marcos) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+                        <!-- Marco 1: Sprint 00 -->
+                        <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 relative">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-display font-bold text-sm text-[#0F172A]">Sprint 00</span>
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Concluído</span>
+                            </div>
+                            <p class="text-xs text-slate-600 flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-emerald-700"></i> 02/09/2026
+                            </p>
+                        </div>
+
+                        <!-- Marco 2: Sprint 01 -->
+                        <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 relative">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-display font-bold text-sm text-[#0F172A]">Sprint 01</span>
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Concluída</span>
+                            </div>
+                            <p class="text-xs text-slate-600 flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-emerald-700"></i> 30/09/2026
+                            </p>
+                        </div>
+
+                        <!-- Marco 3: Sprint 02 -->
+                        <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 relative">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-display font-bold text-sm text-[#0F172A]">Sprint 02</span>
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">Concluída</span>
+                            </div>
+                            <p class="text-xs text-slate-600 flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-emerald-700"></i> 30/10/2026
+                            </p>
+                        </div>
+
+                        <!-- Marco 4: Sprint 03 -->
+                        <div class="bg-amber-50/80 border-2 border-amber-300 rounded-2xl p-4 relative shadow-xs">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-display font-bold text-sm text-[#0F172A]">Sprint 03</span>
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-ping"></span>
+                                    Em andamento
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-700 font-medium flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-amber-700"></i> 25/11/2026
+                            </p>
+                        </div>
+
+                        <!-- Marco 5: Feira de Soluções -->
+                        <div class="bg-indigo-50/60 border border-indigo-200 rounded-2xl p-4 relative">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-display font-bold text-sm text-[#0F172A]">Feira de Soluções</span>
+                                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800">Planejando</span>
+                            </div>
+                            <p class="text-xs text-slate-600 flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-indigo-700"></i> 03/12/2026
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Tabela Estruturada de Entregas -->
+                    <div class="overflow-x-auto rounded-2xl border border-slate-200 max-w-3xl mx-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#0F172A] text-white text-xs uppercase tracking-wider">
+                                    <th class="py-3.5 px-5 font-semibold">Sprint / Marco</th>
+                                    <th class="py-3.5 px-5 font-semibold">Previsão</th>
+                                    <th class="py-3.5 px-5 font-semibold text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-sm">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="py-3.5 px-5 font-semibold text-[#0F172A]">Sprint 00</td>
+                                    <td class="py-3.5 px-5 text-slate-600">02/09/2026</td>
+                                    <td class="py-3.5 px-5 text-right">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                            <i class="fa-solid fa-check"></i> Concluído
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="py-3.5 px-5 font-semibold text-[#0F172A]">Sprint 01</td>
+                                    <td class="py-3.5 px-5 text-slate-600">30/09/2026</td>
+                                    <td class="py-3.5 px-5 text-right">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                            <i class="fa-solid fa-check"></i> Concluída
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="py-3.5 px-5 font-semibold text-[#0F172A]">Sprint 02</td>
+                                    <td class="py-3.5 px-5 text-slate-600">30/10/2026</td>
+                                    <td class="py-3.5 px-5 text-right">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                            <i class="fa-solid fa-check"></i> Concluída
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="bg-amber-50/40 hover:bg-amber-50/80">
+                                    <td class="py-3.5 px-5 font-bold text-[#0F172A]">Sprint 03</td>
+                                    <td class="py-3.5 px-5 font-medium text-slate-700">25/11/2026</td>
+                                    <td class="py-3.5 px-5 text-right">
+                                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                            <span class="w-2 h-2 rounded-full bg-amber-600 animate-pulse"></span> Em andamento
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="py-3.5 px-5 font-semibold text-[#0F172A]">Feira de Soluções</td>
+                                    <td class="py-3.5 px-5 text-slate-600">03/12/2026</td>
+                                    <td class="py-3.5 px-5 text-right">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
+                                            <i class="fa-regular fa-clock"></i> Planejando
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Acordeão Opcional: Imagem Original do Registro das Sprints -->
+                    <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+                        <button type="button" onclick="toggleAccordion('acc-sprints', this)" class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-[#1E3A8A] bg-blue-50/80 hover:bg-blue-100 transition-colors">
+                            <i class="fa-regular fa-image"></i>
+                            <span>Visualizar Registro Original das Sprints (image_6b8a5f.png)</span>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 acc-icon"></i>
+                        </button>
+                        <div id="acc-sprints" class="accordion-content mt-4">
+                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 max-w-xl mx-auto">
+                                <img src="image_6b8a5f.png" alt="Registro Original das Sprints" class="w-full h-auto rounded-xl shadow-xs mx-auto" onerror="this.src='https://placehold.co/700x500/F1F5F9/1E3A8A?text=Registro+das+Sprints+(image_6b8a5f.png)'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             6. EQUIPE — ESTRUTURA ÁGIL (SCRUM)
+        ====================================================================== -->
+        <section id="equipe" class="py-20 lg:py-24 bg-white border-t border-slate-200/70">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="inline-block text-xs font-bold uppercase tracking-widest text-[#EE3124] mb-2">
+                        Papéis &amp; Responsabilidades Scrum
+                    </span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-4">
+                        Equipe — Estrutura Ágil
+                    </h2>
+                    <p class="text-base sm:text-lg text-slate-600">
+                        Organização multidisciplinar responsável pela concepção, tratamento de dados, design analítico e entrega da solução CPTM.
+                    </p>
+                </div>
+
+                <!-- NÍVEL 1: LIDERANÇA ÁGIL (SCRUM MASTER & PRODUCT OWNER LADO A LADO) -->
+                <div class="mb-6 text-center">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-crown text-[#EE3124]"></i> Liderança Ágil
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
+                    <!-- 1. Derick Fernandes Souta — Scrum Master -->
+                    <div class="bg-[#F8FAFC] rounded-3xl p-8 border-2 border-[#1E3A8A]/20 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center relative overflow-hidden">
+                        <div class="absolute top-0 inset-x-0 h-1.5 bg-[#1E3A8A]"></div>
+                        
+                        <!-- Foto Circular Perfeita (Alinhamento Facial Superior) -->
+                        <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden mx-auto border-4 border-[#1E3A8A] shadow-md bg-slate-100 mb-5 relative">
+                            <img src="derick.jpeg" alt="Derick Fernandes Souta — Scrum Master" class="w-full h-full object-cover object-[center_18%]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center bg-[#1E3A8A] text-white font-display font-bold text-3xl">
+                                DF
+                            </div>
+                        </div>
+
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#1E3A8A] text-white mb-3">
+                            <i class="fa-solid fa-compass"></i> Scrum Master
+                        </span>
+                        <h3 class="font-display font-extrabold text-xl text-[#0F172A]">
+                            Derick Fernandes Souta
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-2">
+                            Facilitação das cerimônias Scrum, remoção de impedimentos e garantia da fluidez do processo ágil.
+                        </p>
+                    </div>
+
+                    <!-- 2. Lucas Silva Daniel — Product Owner (P.O.) -->
+                    <div class="bg-[#F8FAFC] rounded-3xl p-8 border-2 border-[#EE3124]/25 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center relative overflow-hidden">
+                        <div class="absolute top-0 inset-x-0 h-1.5 bg-[#EE3124]"></div>
+
+                        <!-- Foto Circular Perfeita (Alinhamento Facial Superior) -->
+                        <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden mx-auto border-4 border-[#EE3124] shadow-md bg-slate-100 mb-5 relative">
+                            <img src="silva.jpeg" alt="Lucas Silva Daniel — Product Owner (P.O.)" class="w-full h-full object-cover object-[center_18%]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center bg-[#EE3124] text-white font-display font-bold text-3xl">
+                                LS
+                            </div>
+                        </div>
+
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#EE3124] text-white mb-3">
+                            <i class="fa-solid fa-chess-king"></i> Product Owner (P.O.)
+                        </span>
+                        <h3 class="font-display font-extrabold text-xl text-[#0F172A]">
+                            Lucas Silva Daniel
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-2">
+                            Visão do produto, priorização do Product Backlog e alinhamento estratégico com os requisitos da CPTM.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- NÍVEL 2: DEV TEAM (5 INTEGRANTES NA ORDEM SOLICITADA) -->
+                <div class="mb-8 text-center">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-code text-[#1E3A8A]"></i> Development Team (Dev Team)
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                    <!-- 3. Fabiano Almeida Cardoso de Souza — Dev Team -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-[#1E3A8A]/40 hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center">
+                        <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden mx-auto border-4 border-white shadow-md bg-slate-100 mb-4 relative">
+                            <img src="fotodofabiano.jpeg" alt="Fabiano Almeida Cardoso de Souza — Dev Team" class="w-full h-full object-cover object-[center_18%]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center bg-[#0F172A] text-white font-display font-bold text-2xl">
+                                FA
+                            </div>
+                        </div>
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-200/80 text-[#0F172A] mb-2">
+                            Dev Team
+                        </span>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] leading-snug">
+                            Fabiano Almeida Cardoso de Souza
+                        </h3>
+                    </div>
+
+                    <!-- 4. Jonathan Wesley Ferreira da Silva — Dev Team -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-[#1E3A8A]/40 hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center">
+                        <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden mx-auto border-4 border-white shadow-md bg-slate-100 mb-4 relative">
+                            <img src="jonathan.jpeg" alt="Jonathan Wesley Ferreira da Silva — Dev Team" class="w-full h-full object-cover object-[center_18%]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center bg-[#0F172A] text-white font-display font-bold text-2xl">
+                                JW
+                            </div>
+                        </div>
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-200/80 text-[#0F172A] mb-2">
+                            Dev Team
+                        </span>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] leading-snug">
+                            Jonathan Wesley Ferreira da Silva
+                        </h3>
+                    </div>
+
+                    <!-- 5. Julio Eduardo Bustamante Mancisidor — Dev Team -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-[#1E3A8A]/40 hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center">
+                        <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden mx-auto border-4 border-white shadow-md bg-slate-100 mb-4 relative">
+                            <img src="julio.jpeg" alt="Julio Eduardo Bustamante Mancisidor — Dev Team" class="w-full h-full object-cover object-[center_18%]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center bg-[#0F172A] text-white font-display font-bold text-2xl">
+                                JE
+                            </div>
+                        </div>
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-200/80 text-[#0F172A] mb-2">
+                            Dev Team
+                        </span>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] leading-snug">
+                            Julio Eduardo Bustamante Mancisidor
+                        </h3>
+                    </div>
+
+                    <!-- 6. Lucas Daniel da Silva Faria — Dev Team -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-[#1E3A8A]/40 hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center">
+                        <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden mx-auto border-4 border-white shadow-md bg-slate-100 mb-4 relative">
+                            <img src="WhatsApp Image 2026-11-23 at 09.55.50.jpeg" alt="Lucas Daniel da Silva Faria — Dev Team" class="w-full h-full object-cover object-[center_18%]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center bg-[#0F172A] text-white font-display font-bold text-2xl">
+                                LD
+                            </div>
+                        </div>
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-200/80 text-[#0F172A] mb-2">
+                            Dev Team
+                        </span>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] leading-snug">
+                            Lucas Daniel da Silva Faria
+                        </h3>
+                    </div>
+
+                    <!-- 7. Tiago Moreira Luz Bittencourt — Dev Team -->
+                    <div class="bg-[#F8FAFC] rounded-2xl p-6 border border-slate-200/90 shadow-xs hover:shadow-lg hover:border-[#1E3A8A]/40 hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center sm:col-span-2 lg:col-span-1">
+                        <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden mx-auto border-4 border-white shadow-md bg-slate-100 mb-4 relative">
+                            <img src="tiago.jpeg" alt="Tiago Moreira Luz Bittencourt — Dev Team" class="w-full h-full object-cover object-[center_18%]" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none;" class="w-full h-full items-center justify-center bg-[#0F172A] text-white font-display font-bold text-2xl">
+                                TM
+                            </div>
+                        </div>
+                        <span class="inline-block px-3 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-200/80 text-[#0F172A] mb-2">
+                            Dev Team
+                        </span>
+                        <h3 class="font-display font-bold text-base text-[#0F172A] leading-snug">
+                            Tiago Moreira Luz Bittencourt
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =====================================================================
+         7. RODAPÉ (FOOTER)
+    ====================================================================== -->
+    <footer class="bg-[#0F172A] text-slate-300 pt-14 pb-10 border-t-4 border-[#EE3124]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="inline-flex items-center justify-center gap-3 mb-4">
+                <div class="w-9 h-9 rounded-lg bg-[#1E3A8A] text-white flex items-center justify-center">
+                    <i class="fa-solid fa-train-subway"></i>
+                </div>
+                <span class="font-display font-extrabold text-xl text-white tracking-tight">
+                    API <span class="text-[#EE3124]">CPTM</span> • Logística
+                </span>
+            </div>
+
+            <p class="text-sm text-slate-400 max-w-2xl mx-auto mb-6">
+                Solução em Business Intelligence e Análise de Giro de Estoque aplicada à manutenção ferroviária.
+            </p>
+
+            <div class="h-px w-full max-w-md mx-auto bg-slate-800 mb-6"></div>
+
+            <p class="text-xs sm:text-sm font-medium text-slate-400">
+                Projeto API — Curso Superior de Tecnologia em Logística • Estudo de Caso CPTM • 2026
+            </p>
+        </div>
+    </footer>
+
+    <!-- =====================================================================
+         SCRIPTS DE INTERATIVIDADE (MENU MOBILE, FILTROS BACKLOG, ACORDEÃO)
+    ====================================================================== -->
+    <script>
+        // 1. Controle do Menu Mobile
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuIcon = document.getElementById('mobile-menu-icon');
+        const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+        function toggleMobileMenu() {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenuIcon.classList.remove('fa-bars');
+                mobileMenuIcon.classList.add('fa-xmark');
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenuIcon.classList.remove('fa-xmark');
+                mobileMenuIcon.classList.add('fa-bars');
+            }
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (!mobileMenu.classList.contains('hidden')) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+
+        // Sombra dinâmica na Navbar ao rolar
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 12) {
+                navbar.classList.add('shadow-md');
+            } else {
+                navbar.classList.remove('shadow-md');
+            }
+        });
+
+        // 2. Filtros Interativos do Product Backlog (Sprint e Prioridade)
+        let currentSprintFilter = 'all';
+        let currentPrioFilter = 'all';
+
+        const sprintButtons = document.querySelectorAll('.sprint-filter-btn');
+        const prioButtons = document.querySelectorAll('.prio-filter-btn');
+        const backlogRows = document.querySelectorAll('.backlog-row');
+        const backlogCounter = document.getElementById('backlog-counter');
+
+        function applyBacklogFilters() {
+            let visibleCount = 0;
+
+            backlogRows.forEach(row => {
+                const rowSprint = row.getAttribute('data-sprint');
+                const rowPrio = row.getAttribute('data-prio');
+
+                const matchesSprint = (currentSprintFilter === 'all' || rowSprint === currentSprintFilter);
+                const matchesPrio = (currentPrioFilter === 'all' || rowPrio === currentPrioFilter);
+
+                if (matchesSprint && matchesPrio) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            backlogCounter.textContent = `Exibindo ${visibleCount} de ${backlogRows.length} histórias de usuário`;
+        }
+
+        sprintButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sprintButtons.forEach(b => {
+                    b.classList.remove('bg-[#0F172A]', 'text-white', 'shadow-2xs');
+                    b.classList.add('text-slate-600');
+                });
+                btn.classList.add('bg-[#0F172A]', 'text-white', 'shadow-2xs');
+                btn.classList.remove('text-slate-600');
+
+                currentSprintFilter = btn.getAttribute('data-filter-sprint');
+                applyBacklogFilters();
+            });
+        });
+
+        prioButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                prioButtons.forEach(b => {
+                    b.classList.remove('bg-[#1E3A8A]', 'text-white', 'shadow-2xs');
+                    b.classList.add('text-slate-600');
+                });
+                btn.classList.add('bg-[#1E3A8A]', 'text-white', 'shadow-2xs');
+                btn.classList.remove('text-slate-600');
+
+                currentPrioFilter = btn.getAttribute('data-filter-prio');
+                applyBacklogFilters();
+            });
+        });
+
+        // 3. Controle dos Acordeões para Visualização das Imagens Originais
+        function toggleAccordion(id, btnElement) {
+            const content = document.getElementById(id);
+            const icon = btnElement.querySelector('.acc-icon');
+
+            content.classList.toggle('open');
+            if (content.classList.contains('open')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+    </script>
+</body>
+</html>
